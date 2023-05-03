@@ -8,6 +8,8 @@ Vous devez disposer de l'environnement d'exécution `node.js` et de son gestionn
 
 Pour la prise en charge des caractères spéciaux, le script assume le fichier d'entrée est encodé au format Unicode (`ISO-8859-1`). Cet encodage est également appliqué aux fichiers générés. Normalement, vous n'avez rien de spécial à faire si le fichier N4DS a été généré à partir d'un ordinateur configuré en français.
 
+Le script traite uniquement les fichiers qui se terminent par l'extension `.dsn`. Il ne fait pas de contrôle de validité des fichiers fournis. Il est recommandé de tester la validité des fichiers convertis avec l'outil [`Dsn-Val`](https://www.net-entreprises.fr/declaration/outils-de-controle-dsn-val/).
+
 ## installation
 
 Clonez le dépôt git, ou téléchargez-le au format zip puis décompressez-le.
