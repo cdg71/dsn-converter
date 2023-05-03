@@ -1,0 +1,25 @@
+{
+  // dossiers de travail
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    // terminal
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    // format
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnType": true,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    // lint
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true
+    },
+    // files associations
+    "files.associations": {
+      "*.json": "jsonc"
+    }
+  }
+}
