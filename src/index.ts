@@ -4,6 +4,7 @@ import { promises as fsPromises } from "node:fs";
 
 interface ScriptStatistics {
   start: number;
+  processedFiles: number;
   end?: number;
   duration?: number;
 }
@@ -17,12 +18,22 @@ interface ScriptStatistics {
   console.log("Début de la conversion DSN");
   const scriptStatistics: ScriptStatistics = {
     start: performance.now(),
+    processedFiles: 0,
   };
+  const limit = 1;
+  const delimiter = /S20.G00.05.001,'01'/;
   try {
     const { inputFolder, outputFolder } = getParameters();
-    const files = await getFiles({ inputFolder });
-
-    console.log({ inputFolder, outputFolder, length: files.length });
+    const fileNames = await getFiles({ inputFolder });
+    for (const fileName of fileNames) {
+      if (path.extname(fileName) === ".dsn") {
+        const filePath = path.join(inputFolder, fileName);
+        const dsnFileParts = await getDsnFileParts({ filePath, delimiter });
+        //generate the corresponding dsn files
+      }
+      scriptStatistics.processedFiles++;
+      if (scriptStatistics.processedFiles >= limit) break;
+    }
   } catch (error) {
     console.error(error);
   } finally {
@@ -62,11 +73,31 @@ async function getFiles({
 }: {
   inputFolder: string;
 }): Promise<string[]> {
-  console.log("- Lecture des fichiers");
+  console.log("- Listing des fichiers");
   try {
     const files = await fsPromises.readdir(inputFolder);
     return files;
   } catch (error) {
-    throw { message: "Impossible de lire les fichiers", error };
+    throw { message: "Impossible de lister les fichiers", error };
+  }
+}
+
+async function getDsnFileParts({
+  filePath,
+  delimiter,
+}: {
+  filePath: string;
+  delimiter: RegExp;
+}): Promise<string[]> {
+  console.log(`- Lecture du fichier '${filePath}'`);
+  try {
+    const fileContents = await fsPromises.readFile(filePath, "latin1");
+    const fileParts = fileContents.split(delimiter);
+    return fileParts;
+  } catch (error) {
+    throw {
+      message: `Impossible de lire le fichier '${filePath}'`,
+      error,
+    };
   }
 }
