@@ -2,6 +2,7 @@ import path from "node:path";
 import { performance } from "node:perf_hooks";
 import { promises as fsPromises } from "node:fs";
 import JSZip from "jszip";
+import iconv from "iconv-lite";
 
 interface ScriptStatistics {
   start: number;
@@ -184,7 +185,11 @@ async function splitGlobalDsnFile({
 }): Promise<string[]> {
   try {
     console.log(`- Découpage du fichier '${filePath}'`);
-    const fileContents = await fsPromises.readFile(filePath, "latin1");
+    // const fileContents = await fsPromises.readFile(filePath, "latin1");
+    const fileContents = iconv.decode(
+      await fsPromises.readFile(filePath),
+      "windows-1252"
+    );
     const fileParts = fileContents.split(delimiter);
     return fileParts;
   } catch (error) {
@@ -314,7 +319,9 @@ async function writeZipfile({
     const zip = new JSZip();
     for (const dsnFile of organisationData) {
       const filename = `${siren}_${dsnFile.payMonth}.dsn`;
-      zip.file(filename, dsnFile.content);
+      //https://github.com/Stuk/jszip/issues/220
+      const dsnBinary = iconv.encode(dsnFile.content, "windows-1252");
+      zip.file(filename, dsnBinary, { binary: true });
     }
     const zipContent = await zip.generateAsync({ type: "uint8array" });
     await createFolderIfNotExists({ outputFolderPath });
